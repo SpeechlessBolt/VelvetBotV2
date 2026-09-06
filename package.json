@@ -1,0 +1,15 @@
+{
+  "name": "telegram-roleplay-bot-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "A fully editable Telegram human-admin roleplay/support bot for Vercel + Upstash Redis.",
+  "main": "api/webhook.js",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check api/webhook.js && node --check api/setup.js && node --check api/health.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
