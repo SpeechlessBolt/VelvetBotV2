@@ -36,7 +36,7 @@ async function openTicket(user, flow, node) {
   const answers = answerSummary(user);
   const text = [
     `🟢 Ticket #${ticketId} opened`,
-    `User: ${user.displayName || 'Unknown'} (ID ${user.id})`,
+    `User: ${user.displayName || 'Unknown'}\nUsername: @${user.username || 'none'}\nTelegram ID: ${user.id}`,
     `Path: ${path}`,
     answers ? `\nCollected answers:\n${answers}` : '',
     '\nReply to this message or to any relayed user message to answer.',
