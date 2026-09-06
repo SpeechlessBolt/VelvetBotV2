@@ -15,13 +15,17 @@ async function startUser(message) {
   user.currentNodeId = flow.rootId;
   user.pendingQuestionNodeId = null;
 
-  if (config.settings.askNameOnFirstStart && !user.displayName) {
+  user.firstName = message.from.first_name || null;
+  user.lastName = message.from.last_name || null;
+  user.username = message.from.username || null;
+  user.displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'User';
+
+  if (!user.username) {
     user.awaitingName = true;
     await saveUser(chatId, user);
-    return sendMessage(chatId, config.texts.ask_name);
+    return sendMessage(chatId, '⚠️ You do not have a Telegram username. Please create one in Telegram Settings, then return and press /start again.');
   }
 
-  if (!user.displayName) user.displayName = message.from.first_name || 'User';
   user.awaitingName = false;
   await saveUser(chatId, user);
   return renderRoot(chatId, flow, config);
