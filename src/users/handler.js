@@ -23,7 +23,7 @@ async function startUser(message) {
   if (!user.username) {
     user.awaitingName = true;
     await saveUser(chatId, user);
-    return sendMessage(chatId, '⚠️ You do not have a Telegram username. Please create one in Telegram Settings, then return and press /start again.');
+    return sendMessage(chatId, '⚠️ لطفا ابتدا یک یوزرنیم/آیدی برای اکانتتون بذارین و بعد مجدد /start کنید.');
   }
 
   user.awaitingName = false;
