@@ -9,6 +9,7 @@ const {
   getStats,
   getUser,
   saveUser,
+  getAllUserIds,
 } = require('../storage/state');
 const { sendMessage, answerCallbackQuery } = require('../telegram/client');
 const { contentFromMessage } = require('../telegram/content');
@@ -48,6 +49,7 @@ async function showAdminHome(chatId) {
       [button('🧩 Flow Builder', 'a:flow:root')],
       [button('✏️ System texts', 'a:texts'), button('⚙️ Settings', 'a:settings')],
       [button('📊 Stats', 'a:stats')],
+      [button('📢 Broadcast', 'a:broadcast')],
     ]),
   });
 }
@@ -154,6 +156,11 @@ async function handleAdminCallback(callback) {
   if (data === 'a:home') return showAdminHome(chatId);
   if (data === 'a:texts') return showTexts(chatId);
   if (data === 'a:settings') return showSettings(chatId);
+  if (data === 'a:broadcast') {
+    await saveAdminState(chatId, { mode: 'broadcast' });
+    return sendMessage(chatId, '📢 Send the message you want to broadcast to all users.');
+  }
+
   if (data === 'a:stats') {
     const stats = await getStats();
     return sendMessage(chatId, `📊 STATS\n\nUsers: ${stats.users}\nTickets created: ${stats.tickets}\nAdmins: ${stats.admins}`, {
@@ -369,6 +376,23 @@ async function handleAdminStateMessage(message) {
     await clearAdminState(adminId);
     await sendMessage(adminId, '✅ Saved.');
     await showNodeEditor(adminId, node.id);
+    return true;
+  }
+
+  if (state.mode === 'broadcast') {
+    const users = await getAllUserIds();
+    let sent = 0;
+    let failed = 0;
+    for (const id of users) {
+      try {
+        await sendMessage(id, message.text || '📢 Announcement');
+        sent++;
+      } catch {
+        failed++;
+      }
+    }
+    await clearAdminState(adminId);
+    await sendMessage(adminId, `✅ Broadcast complete\nSent: ${sent}\nFailed: ${failed}`);
     return true;
   }
 
