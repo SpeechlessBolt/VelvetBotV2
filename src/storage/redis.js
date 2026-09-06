@@ -57,6 +57,10 @@ async function scard(key) {
   return Number(await command(['SCARD', key]));
 }
 
+async function smembers(key) {
+  return await command(['SMEMBERS', key]);
+}
+
 async function getJSON(key, fallback = null) {
   const raw = await get(key);
   if (raw === null || raw === undefined) return fallback;
@@ -80,6 +84,7 @@ module.exports = {
   incr,
   sadd,
   scard,
+  smembers,
   getJSON,
   setJSON,
 };

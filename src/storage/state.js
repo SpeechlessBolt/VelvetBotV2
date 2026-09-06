@@ -1,4 +1,4 @@
-const { getJSON, setJSON, incr, sadd, scard, set, del } = require('./redis');
+const { getJSON, setJSON, incr, sadd, scard, smembers, set, del } = require('./redis');
 const { defaultFlow, DEFAULT_CONFIG } = require('../flow/defaults');
 
 const KEYS = {
@@ -56,6 +56,9 @@ function blankUser(userId) {
   return {
     id: Number(userId),
     displayName: null,
+    firstName: null,
+    lastName: null,
+    username: null,
     currentNodeId: 'root',
     awaitingName: false,
     pendingQuestionNodeId: null,
@@ -74,6 +77,10 @@ async function getOrCreateUser(userId) {
   }
   await sadd(KEYS.usersSet, userId);
   return user;
+}
+
+async function getAllUserIds() {
+  return await smembers(KEYS.usersSet);
 }
 
 async function saveUser(userId, user) {
@@ -141,4 +148,5 @@ module.exports = {
   markUpdate,
   unmarkUpdate,
   getStats,
+  getAllUserIds,
 };
