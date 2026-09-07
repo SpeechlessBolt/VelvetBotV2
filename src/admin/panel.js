@@ -10,6 +10,8 @@ const {
   getUser,
   saveUser,
   getAllUserIds,
+  banUser,
+  unbanUser,
 } = require('../storage/state');
 const { sendMessage, answerCallbackQuery } = require('../telegram/client');
 const { contentFromMessage } = require('../telegram/content');
@@ -50,6 +52,7 @@ async function showAdminHome(chatId) {
       [button('✏️ System texts', 'a:texts'), button('⚙️ Settings', 'a:settings')],
       [button('📊 Stats', 'a:stats')],
       [button('📢 Broadcast', 'a:broadcast')],
+      [button('🚫 Ban user', 'a:ban'), button('✅ Unban user', 'a:unban')],
     ]),
   });
 }
@@ -284,6 +287,17 @@ async function handleAdminCallback(callback) {
     );
   }
 
+
+  if (data === 'a:ban') {
+    await saveAdminState(chatId, { mode: 'ban_user' });
+    return sendMessage(chatId, 'Send the Telegram user ID to ban.');
+  }
+
+  if (data === 'a:unban') {
+    await saveAdminState(chatId, { mode: 'unban_user' });
+    return sendMessage(chatId, 'Send the Telegram user ID to unban.');
+  }
+
   if (data.startsWith('a:ct:')) {
     const [, , userId, ticketId] = data.split(':');
     const user = await getUser(userId);
@@ -376,6 +390,25 @@ async function handleAdminStateMessage(message) {
     await clearAdminState(adminId);
     await sendMessage(adminId, '✅ Saved.');
     await showNodeEditor(adminId, node.id);
+    return true;
+  }
+
+
+  if (state.mode === 'ban_user') {
+    const id = Number(message.text);
+    if (!id) return sendMessage(adminId, 'Send a valid Telegram user ID.');
+    await banUser(id);
+    await clearAdminState(adminId);
+    await sendMessage(adminId, `🚫 User ${id} banned.`);
+    return true;
+  }
+
+  if (state.mode === 'unban_user') {
+    const id = Number(message.text);
+    if (!id) return sendMessage(adminId, 'Send a valid Telegram user ID.');
+    await unbanUser(id);
+    await clearAdminState(adminId);
+    await sendMessage(adminId, `✅ User ${id} unbanned.`);
     return true;
   }
 
