@@ -1,1 +1,1 @@
-Combined identity + broadcast patch. Replace included files only.
+Fixes Redis WRONGTYPE crash by changing the ban list key from v2:banned to v2:bannedUsers. Replace src/storage/state.js only.
