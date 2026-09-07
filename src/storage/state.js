@@ -7,7 +7,7 @@ const KEYS = {
   admins: 'v2:admins',
   ticketCounter: 'v2:counter:ticket',
   usersSet: 'v2:users',
-  bannedUsers: 'v2:banned',
+  bannedUsers: 'v2:bannedUsers',
 };
 
 
