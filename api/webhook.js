@@ -1,4 +1,4 @@
-const { isAdmin, getForwardTarget, markUpdate, unmarkUpdate } = require('../src/storage/state');
+const { isAdmin, isBanned, getForwardTarget, markUpdate, unmarkUpdate } = require('../src/storage/state');
 const { claimAdmin } = require('../src/admin/auth');
 const { showAdminHome, handleAdminCallback, handleAdminStateMessage } = require('../src/admin/panel');
 const { sendMessage } = require('../src/telegram/client');
@@ -21,6 +21,11 @@ async function processMessage(message) {
   if (!message?.from?.id || !message?.chat?.id) return;
   const userId = message.from.id;
   const cmd = commandParts(message.text);
+
+  if (await isBanned(userId) && cmd?.command !== '/claim') {
+    await sendMessage(userId, '🚫 You are not allowed to use this bot.');
+    return;
+  }
 
   if (cmd?.command === '/claim') {
     const code = cmd.args.join(' ');
