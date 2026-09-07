@@ -7,7 +7,27 @@ const KEYS = {
   admins: 'v2:admins',
   ticketCounter: 'v2:counter:ticket',
   usersSet: 'v2:users',
+  bannedUsers: 'v2:banned',
 };
+
+
+async function isBanned(userId) {
+  const banned = await smembers(KEYS.bannedUsers);
+  return banned.includes(String(userId)) || banned.includes(Number(userId));
+}
+
+async function banUser(userId) {
+  await sadd(KEYS.bannedUsers, Number(userId));
+}
+
+async function unbanUser(userId) {
+  const list = await smembers(KEYS.bannedUsers);
+  await setJSON(KEYS.bannedUsers, list.filter((id) => Number(id) !== Number(userId)));
+}
+
+async function getBannedUsers() {
+  return await smembers(KEYS.bannedUsers);
+}
 
 async function getFlow() {
   let flow = await getJSON(KEYS.flow);
@@ -149,4 +169,8 @@ module.exports = {
   unmarkUpdate,
   getStats,
   getAllUserIds,
+  isBanned,
+  banUser,
+  unbanUser,
+  getBannedUsers,
 };
